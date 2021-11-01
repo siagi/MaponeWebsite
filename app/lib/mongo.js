@@ -1,5 +1,5 @@
 const urlMapone = "mongodb+srv://mimas:maselko88@cluster0.rwb9n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-const {MongoClient} = require('mongodb');
+const {MongoClient,ObjectId} = require('mongodb');
 const uri=urlMapone;
 const client = new MongoClient(uri);
 
@@ -56,17 +56,17 @@ async function dbAdd(){
     }
 }
 
-async function dbUpdate(){
+async function dbUpdate(id){
     try {
         await client.connect();
         const chosenDb = client.db('mapone');
         const updatedProduct = await chosenDb.collection('products').updateOne(
             {
-            _id:ObjectId('61456bcfde7f6b3bdf0abae6'),
+            _id:new ObjectId(id),
             },
             {
                 $set:{
-                    description:'To jest jeszcze lepszy opis', 
+                    description:'To jest jeszcze lepszy opis2', 
                 }
             }
         );
@@ -77,6 +77,23 @@ async function dbUpdate(){
     }finally{
         client.close();
     }
+}
+
+async function dbDelete(id){
+
+    try {
+        await client.connect();
+        const chosenDb = client.db('mapone');
+        const deletedProduct = await chosenDb.collection('products').deleteOne({_id:new ObjectId(id)});
+        console.log(deletedProduct);
+
+        
+    } catch (error) {
+
+        console.log(error);
+        
+    }
+
 }
 
 async function dbClose(){
