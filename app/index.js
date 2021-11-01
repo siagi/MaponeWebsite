@@ -1,6 +1,27 @@
+const db = require('./lib/mongo');
+db.dbUpdate();
+
 const http = require('http');
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
+const config = require('./config');
+
+// const urlMapone = "mongodb+srv://mimas:maselko88@cluster0.rwb9n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+// const {MongoClient} = require('mongodb');
+// async function main(){
+//     const uri="mongodb+srv://mimas:maselko88@cluster0.rwb9n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+//     const client = new MongoClient(uri);
+//     try {
+//         await client.connect();
+//     } catch (error) {
+//         console.log(error);
+//     }finally{
+//         await client.close();
+//     }
+// }
+
+// main();
+
 
 const server = http.createServer(function(req,res){
 
@@ -96,8 +117,10 @@ const server = http.createServer(function(req,res){
 
 });
 
-server.listen(3000, ()=>{
-    console.log('Listening on 3000');
+
+
+server.listen(config.port, ()=>{
+    console.log(`Listening on ${config.port} in ${config.envName}`);
 });
 
 const handlers ={};
@@ -113,6 +136,13 @@ handlers.main = (data,callback) =>{
 
 }
 
+handlers.products = async (data,callback) =>{
+    
+    const product = await db.dbFind();
+    callback(200,product);
+
+}
+
 handlers.notFound = (data,callback) => {
   
     callback(404);
@@ -122,5 +152,21 @@ handlers.notFound = (data,callback) => {
 const router = {
     'sample':handlers.sample,
     'main':handlers.main,
+    'products':handlers.products,
     'notFound':handlers.notFound,
 }
+
+
+// import { MongoClient } from 'mongodb';
+// const uri = 'mongodb+srv://mimas:maselko88@cluster0.rwb9n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+
+// MongoClient.connect(uri, (err,db)=>{
+
+//     if(err) throw err;
+//     const dbo = db.db('mapone');
+//     dbo.collection('products').findOne({},(err,result)=>{
+//         if(err) console.log(err);
+//         console.log(result);
+//         db.close();
+//     });
+// });
